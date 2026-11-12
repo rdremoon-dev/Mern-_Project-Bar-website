@@ -13,25 +13,32 @@ async function createAdmin() {
   try {
     await mongoose.connect(MONGO_URI);
 
-    // Remove any existing admin with this email
-    await Admin.deleteMany({ email: 'admin@example.com' });
+    const email = 'admin@example.com';
+    const existingAdmin = await Admin.findOne({ email });
+    if (existingAdmin) {
+      console.log(
+        'Admin already exists. Its password and profile image were preserved.',
+      );
+      return;
+    }
 
     const hashedPassword = await bcrypt.hash('admin1234', 10);
 
     await Admin.create({
       name: 'Reservation Manager',
-      email: 'admin@example.com',
+      email,
       password: hashedPassword,
-      avatar: '/src/assets/profile-img.jpeg',
+      avatar: 'https://readymadeui.com/team-2.webp',
     });
 
-    console.log('✅ Admin credentials created successfully:');
+    console.log('Admin account created successfully:');
     console.log('Email: admin@example.com');
     console.log('Password: admin1234');
-    process.exit();
   } catch (error) {
     console.error('Error seeding admin:', error);
-    process.exit(1);
+    process.exitCode = 1;
+  } finally {
+    await mongoose.disconnect();
   }
 }
 
