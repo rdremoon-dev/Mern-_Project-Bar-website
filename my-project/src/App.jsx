@@ -3,12 +3,12 @@ import { Route, Routes, useLocation } from 'react-router';
 import { AnimatePresence, MotionConfig, motion } from 'motion/react';
 import Navbar from './component/Navbar';
 import Footer from './component/Footer';
+import MenuCard from './component/Menu_card';
 import Home from './page/Home';
 
 const About = lazy(() => import('./page/About'));
 const Contact = lazy(() => import('./page/Contact'));
 const Menus = lazy(() => import('./page/Menus'));
-const MenuCard = lazy(() => import('./component/Menu_card'));
 const EventDetails = lazy(() => import('./component/EventDetails'));
 const AllEvents = lazy(() => import('./page/All_Events'));
 const BookingForm = lazy(() => import('./model/BookingForm'));

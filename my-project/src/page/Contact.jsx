@@ -1,4 +1,6 @@
+import { useEffect } from 'react';
 import { motion } from 'motion/react';
+import { useLocation } from 'react-router';
 import contactBanner from '../assets/contact.jpg';
 import BookingForm from '../model/BookingForm';
 
@@ -8,9 +10,23 @@ const openingHours = [
   { days: 'Sunday', hours: '12pm – 12am' },
 ];
 
-const Contact = () => (
-  <main>
+const Contact = () => {
+  const { hash } = useLocation();
+
+  useEffect(() => {
+    if (!hash) return;
+
+    requestAnimationFrame(() => {
+      document
+        .getElementById(hash.slice(1))
+        ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }, [hash]);
+
+  return (
+    <main>
     <section
+      id="contact-hero"
       aria-labelledby="contact-hero-title"
       className="relative flex min-h-[55vh] items-center justify-center overflow-hidden bg-cover bg-center px-4 pb-12 pt-28 text-center sm:px-[5vw] sm:pt-32"
       style={{ backgroundImage: `url(${contactBanner})` }}
@@ -100,12 +116,13 @@ const Contact = () => (
           </div>
         </aside>
 
-        <div>
+        <div id="booking-form" className="scroll-mt-24">
           <BookingForm compact />
         </div>
       </div>
     </section>
-  </main>
-);
+    </main>
+  );
+};
 
 export default Contact;

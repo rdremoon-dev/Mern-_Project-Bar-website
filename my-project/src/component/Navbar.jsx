@@ -4,9 +4,9 @@ import { AnimatePresence, motion } from 'motion/react';
 
 const links = [
   { to: '/', label: 'Home' },
-  { to: '/about', label: 'About' },
-  { to: '/menu', label: 'Menus' },
-  { to: '/contact', label: 'Contact' },
+  { to: '/about#about-hero', label: 'About' },
+  { to: '/menu#menu-hero', label: 'Menus' },
+  { to: '/contact#contact-hero', label: 'Contact' },
 ];
 
 const Navbar = () => {
@@ -48,7 +48,7 @@ const Navbar = () => {
 
         <div className="flex gap-2 items-center">
           <Link
-            to="/contact"
+            to="/contact#booking-form"
             className="inline-flex shrink-0 rounded bg-[#f10d05ee] px-3 py-2 text-xs font-medium text-white transition hover:-translate-y-0.5 hover:shadow sm:px-5 sm:py-3 sm:text-sm"
           >
             Reserve a table

@@ -36,7 +36,7 @@ const Footer = () => (
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }}>
             <Link
-              to="/contact"
+              to="/contact#booking-form"
               className="inline-flex min-h-12 items-center justify-center rounded-md bg-[#C94077] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#b43568] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             >
               Reserve a table
@@ -44,7 +44,7 @@ const Footer = () => (
           </motion.div>
           <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }}>
             <Link
-              to="/events" 
+              to="/events#all-events"
               className="inline-flex min-h-12 items-center justify-center rounded-md border border-white/70 bg-black/20 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             >
               See upcoming events
@@ -127,8 +127,8 @@ const Footer = () => (
             <h2 className="font-semibold text-gray-50 mb-5">RESOURCES</h2>
             <ul className="text-sm text-gray-500 space-y-2 list-none">
               {[
-                { to: '/events', label: 'All Events' },
-                { to: '/menu', label: 'Menus' },
+                { to: '/events#all-events', label: 'All Events' },
+                { to: '/menu#menu-selections', label: 'Menus' },
                 { to: '/about', label: 'About' },
                 { to: '/contact', label: 'Contact' },
               ].map(({ to, label }) => (
@@ -174,8 +174,9 @@ const Footer = () => (
         </div>
       </div>
       <p className="py-4 text-center text-xs md:text-sm text-gray-100">
-        Copyright 2026 © <a href="https://www.linkedin.com/in/rdremoon/">RD Remoon</a>. All
-        Right Reserved.
+        Copyright 2026 ©{' '}
+        <a href="https://www.linkedin.com/in/rdremoon/">RD Remoon</a>. All Right
+        Reserved.
       </p>
     </div>
   </footer>

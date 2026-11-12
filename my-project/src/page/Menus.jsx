@@ -1,11 +1,26 @@
 import { motion } from 'motion/react';
+import { useEffect } from 'react';
+import { useLocation } from 'react-router';
 import menuBanner from '../assets/banner-2.jpg';
 import Menu_card from '../component/Menu_card';
 
 const Menus = () => {
+  const { hash } = useLocation();
+
+  useEffect(() => {
+    if (!hash) return;
+
+    requestAnimationFrame(() => {
+      document
+        .getElementById(hash.slice(1))
+        ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }, [hash]);
+
   return (
     <main>
       <section
+        id="menu-hero"
         aria-labelledby="menu-page-title"
         className="relative flex min-h-[65vh] items-center justify-center bg-cover bg-center px-4 pb-12 pt-28 text-center sm:px-[5vw] lg:px-[7vw]"
         style={{ backgroundImage: `url(${menuBanner})` }}
