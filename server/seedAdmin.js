@@ -22,7 +22,7 @@ async function createAdmin() {
       name: 'Reservation Manager',
       email: 'admin@example.com',
       password: hashedPassword,
-      avatar: 'https://readymadeui.com/team-2.webp',
+      avatar: '/src/assets/profile-img.jpeg',
     });
 
     console.log('✅ Admin credentials created successfully:');

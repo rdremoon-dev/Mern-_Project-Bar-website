@@ -1,9 +1,24 @@
 import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { getLocalTimeZone, today } from '@internationalized/date';
+import defaultAdminAvatar from '../assets/profile-img.jpeg';
 
 
 const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const maxAvatarSize = 2 * 1024 * 1024;
+const allowedAvatarTypes = new Set([
+  'image/gif',
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+]);
+
+const getAvatarSrc = avatar =>
+  avatar?.startsWith('data:image/') ||
+  avatar?.startsWith('https://') ||
+  avatar?.startsWith('http://')
+    ? avatar
+    : defaultAdminAvatar;
 
 const STAGES = {
   pending: {
@@ -144,22 +159,75 @@ export default function AdminDashboard() {
   });
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [tempProfile, setTempProfile] = useState(profile);
+  const [profileError, setProfileError] = useState('');
+  const [savingProfile, setSavingProfile] = useState(false);
 
   const handleAvatarUpload = e => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setTempProfile(prev => ({ ...prev, avatar: reader.result }));
-      };
-      reader.readAsDataURL(file);
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!allowedAvatarTypes.has(file.type)) {
+      setProfileError('Choose a PNG, JPEG, WebP, or GIF image.');
+      e.target.value = '';
+      return;
     }
+
+    if (file.size > maxAvatarSize) {
+      setProfileError('The profile image must be 2 MB or smaller.');
+      e.target.value = '';
+      return;
+    }
+
+    setProfileError('');
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        setTempProfile(prev => ({ ...prev, avatar: reader.result }));
+      }
+    };
+    reader.onerror = () => setProfileError('Could not read the selected image.');
+    reader.readAsDataURL(file);
   };
 
-  const handleSaveProfile = e => {
+  const handleSaveProfile = async e => {
     e.preventDefault();
-    setProfile(tempProfile);
-    localStorage.setItem('pub_admin_profile', JSON.stringify(tempProfile));
+    setProfileError('');
+
+    let savedProfile = tempProfile;
+    if (tempProfile.avatar !== profile.avatar) {
+      const token = localStorage.getItem('pub_admin_token');
+      if (!token) {
+        setProfileError('Your admin session expired. Please sign in again.');
+        return;
+      }
+
+      setSavingProfile(true);
+      try {
+        const { data } = await axios.put(
+          `${apiUrl}/api/admin/profile`,
+          { avatar: tempProfile.avatar },
+          { headers: { Authorization: `Bearer ${token}` } },
+        );
+
+        if (!data.success || !data.admin?.avatar) {
+          throw new Error('The server did not save the profile image.');
+        }
+
+        savedProfile = { ...tempProfile, avatar: data.admin.avatar };
+      } catch (error) {
+        setProfileError(
+          error.response?.data?.error ||
+            error.message ||
+            'Failed to save the profile image.',
+        );
+        setSavingProfile(false);
+        return;
+      }
+      setSavingProfile(false);
+    }
+
+    setProfile(savedProfile);
+    localStorage.setItem('pub_admin_profile', JSON.stringify(savedProfile));
     setIsProfileOpen(false);
   };
 
@@ -481,7 +549,7 @@ export default function AdminDashboard() {
             className="w-full flex items-center gap-2.5 rounded-lg p-2 hover:bg-neutral-200/60 dark:hover:bg-neutral-900 text-left transition-colors cursor-pointer border border-transparent hover:border-neutral-300 dark:hover:border-neutral-800"
           >
             <img
-              src={profile.avatar}
+              src={getAvatarSrc(profile.avatar)}
               alt="Avatar"
               className="size-8 shrink-0 rounded-full object-cover border border-neutral-300 dark:border-neutral-700"
             />
@@ -1195,30 +1263,39 @@ export default function AdminDashboard() {
             />
             <div className="flex items-center gap-4">
               <img
-                src={tempProfile.avatar}
+                src={getAvatarSrc(tempProfile.avatar)}
                 alt="Avatar"
                 className="size-12 rounded-full object-cover border"
               />
               <input
                 type="file"
-                accept="image/*"
+                accept="image/png,image/jpeg,image/webp,image/gif"
                 onChange={handleAvatarUpload}
                 className="w-full text-xs text-gray-300 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:bg-neutral-900 file:text-white dark:file:bg-neutral-100 dark:file:text-neutral-900 cursor-pointer"
               />
             </div>
+            {profileError && (
+              <p role="alert" className="text-xs text-red-600">
+                {profileError}
+              </p>
+            )}
             <div className="flex justify-end gap-2 pt-2">
               <button
                 type="button"
-                onClick={() => setIsProfileOpen(false)}
+                onClick={() => {
+                  setProfileError('');
+                  setIsProfileOpen(false);
+                }}
                 className="px-4 py-2 rounded-lg border text-xs cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 rounded-lg bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 text-xs font-semibold cursor-pointer"
+                disabled={savingProfile}
+                className="px-4 py-2 rounded-lg bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 text-xs font-semibold cursor-pointer disabled:opacity-50"
               >
-                Save
+                {savingProfile ? 'Saving…' : 'Save'}
               </button>
             </div>
           </form>
