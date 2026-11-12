@@ -19,7 +19,7 @@ app.use(cors());
 app.use('/api/admin', adminAuthRoutes);
 
 const publicAppUrl = (
-  process.env.PUBLIC_APP_URL || 'http://localhost:5173'
+  process.env.PUBLIC_APP_URL || 'https://mern-bar-website-project.netlify.app'
 ).replace(/\/+$/, '');
 const publicApiUrl = (
   process.env.PUBLIC_API_URL || 'http://localhost:3000'
