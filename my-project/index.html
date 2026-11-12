@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>my-project</title>
+    
+  </head>
+  <body>
+    <div id="root"></div>
+
+
+
+<!-- Loader Overlay -->
+<div id="page-loader">
+  <div class="spinner"></div>
+</div>
+
+<!-- Main Content of your website -->
+<div class="content">
+  <h1>Welcome to My Website</h1>
+  <p>Scroll down to see the back-to-top feature...</p>
+  <!-- Add plenty of content here to test scrolling -->
+</div>
+
+<!-- Back to Top Button -->
+<button id="backToTopBtn" title="Go to top"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+  stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up preview-icon">
+  <path d="m5 12 7-7 7 7" />
+  <path d="M12 19V5" />
+</svg></button>
+
+
+
+<script>
+
+  // Clear everything in localStorage
+  localStorage.clear();
+  // Clear everything in sessionStorage
+    sessionStorage.clear();
+
+  // --- 1. Hide Loader when Page Loads ---
+    window.addEventListener('load', () => {
+      const loader = document.getElementById('page-loader');
+      loader.classList.add('loader-hidden');
+      
+
+      // Optional: Completely remove from DOM after transition
+      setTimeout(() => {
+        loader.remove();
+      }, 500);
+    });
+
+    // --- 2. Back-to-Top Button Logic ---
+    const backToTopBtn = document.getElementById('backToTopBtn');
+
+    // Show or hide button depending on scroll position
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 300) {
+        backToTopBtn.style.display = 'block';
+      } else {
+        backToTopBtn.style.display = 'none';
+      }
+    });
+
+    // Scroll smoothly back to top when clicked
+    backToTopBtn.addEventListener('click', () => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+</script>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
