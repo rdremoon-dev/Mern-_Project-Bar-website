@@ -1,9 +1,10 @@
-import { useMemo, useState } from 'react';
-import { Link } from 'react-router';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useLocation } from 'react-router';
 import { AnimatePresence, motion } from 'motion/react';
 import useEvents from '../hooks/useEvents';
 
 const All_Events = () => {
+  const { hash } = useLocation();
   const { events, loading, error } = useEvents();
   const [searchInput, setSearchInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -38,8 +39,18 @@ const All_Events = () => {
     setSortOrder('soonest');
   };
 
+  useEffect(() => {
+    if (hash !== '#all-events') return;
+
+    requestAnimationFrame(() => {
+      document
+        .getElementById('all-events')
+        ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }, [hash]);
+
   return (
-    <main className="min-h-screen bg-[#FBF7F4]">
+    <main className="min-h-screen bg-[#FBF7F4]" aria-label="top">
       <section className="bg-neutral-950 px-4 pb-12 pt-32 text-white sm:px-8 sm:pb-16 lg:px-[7vw]">
         <div className="mx-auto max-w-7xl">
           <motion.p
@@ -112,7 +123,10 @@ const All_Events = () => {
             </button>
           </form>
 
-          <div className="mt-5 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div
+            className="mt-5 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between scroll-mt-24"
+            id="all-events"
+          >
             <div className="min-w-0">
               <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-gray-500">
                 Browse by category
@@ -155,7 +169,9 @@ const All_Events = () => {
               </span>{' '}
               {filteredEvents.length === 1 ? 'event' : 'events'} found
             </p>
-            {(searchQuery || category !== 'All events' || sortOrder !== 'soonest') && (
+            {(searchQuery ||
+              category !== 'All events' ||
+              sortOrder !== 'soonest') && (
               <button
                 type="button"
                 onClick={clearFilters}
@@ -181,54 +197,54 @@ const All_Events = () => {
           {filteredEvents.length > 0 ? (
             <div className="grid gap-6 py-6 sm:grid-cols-2 lg:grid-cols-3">
               <AnimatePresence mode="popLayout">
-              {filteredEvents.map((event, index) => (
-                <motion.article
-                  key={event._id}
-                  layout
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.96 }}
-                  transition={{ duration: 0.3, delay: index * 0.04 }}
-                  whileHover={{ y: -4 }}
-                  className="group flex h-full flex-col overflow-hidden rounded-2xl border border-[#eadbd2] bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg"
-                >
-                  <Link
-                    to={`/events/${event._id}`}
-                    className="relative block aspect-[16/10] overflow-hidden bg-neutral-200 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#C94077]"
-                    aria-label={`View ${event.title}`}
+                {filteredEvents.map((event, index) => (
+                  <motion.article
+                    key={event._id}
+                    layout
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.96 }}
+                    transition={{ duration: 0.3, delay: index * 0.04 }}
+                    whileHover={{ y: -4 }}
+                    className="group flex h-full flex-col overflow-hidden rounded-2xl border border-[#eadbd2] bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg"
                   >
-                    <img
-                      src={event.image}
-                      alt=""
-                      loading="lazy"
-                      className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                    <span className="absolute left-4 top-4 rounded-full bg-white/95 px-3 py-1 text-xs font-semibold text-[#b43568]">
-                      {event.category}
-                    </span>
-                  </Link>
-                  <div className="flex flex-1 flex-col p-5 sm:p-6">
-                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#C94077]">
-                      {event.date}
-                    </p>
-                    <h2 className="mt-2 font-oswald text-2xl font-semibold uppercase leading-tight text-gray-900">
-                      {event.title}
-                    </h2>
-                    <p className="mt-3 line-clamp-3 flex-1 text-sm leading-6 text-gray-600">
-                      {event.desc}
-                    </p>
                     <Link
                       to={`/events/${event._id}`}
-                      className="mt-5 inline-flex min-h-11 items-center justify-center rounded-lg bg-[#C94077] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#b43568] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C94077]"
+                      className="relative block aspect-[16/10] overflow-hidden bg-neutral-200 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#C94077]"
+                      aria-label={`View ${event.title}`}
                     >
-                      View event
-                      <span className="ml-2" aria-hidden="true">
-                        &rarr;
+                      <img
+                        src={event.image}
+                        alt=""
+                        loading="lazy"
+                        className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                      <span className="absolute left-4 top-4 rounded-full bg-white/95 px-3 py-1 text-xs font-semibold text-[#b43568]">
+                        {event.category}
                       </span>
                     </Link>
-                  </div>
-                </motion.article>
-              ))}
+                    <div className="flex flex-1 flex-col p-5 sm:p-6">
+                      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#C94077]">
+                        {event.date}
+                      </p>
+                      <h2 className="mt-2 font-oswald text-2xl font-semibold uppercase leading-tight text-gray-900">
+                        {event.title}
+                      </h2>
+                      <p className="mt-3 line-clamp-3 flex-1 text-sm leading-6 text-gray-600">
+                        {event.desc}
+                      </p>
+                      <Link
+                        to={`/events/${event._id}`}
+                        className="mt-5 inline-flex min-h-11 items-center justify-center rounded-lg bg-[#C94077] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#b43568] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C94077]"
+                      >
+                        View event
+                        <span className="ml-2" aria-hidden="true">
+                          &rarr;
+                        </span>
+                      </Link>
+                    </div>
+                  </motion.article>
+                ))}
               </AnimatePresence>
             </div>
           ) : (
